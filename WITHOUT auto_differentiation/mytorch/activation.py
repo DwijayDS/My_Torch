@@ -120,4 +120,4 @@ class ReLU(Activation):
 
     def derivative(self):
         #raise NotImplemented
-        return 1*(self.state>0)
+        return np.array((self.state>0).astype(float))

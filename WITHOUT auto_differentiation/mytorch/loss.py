@@ -48,7 +48,23 @@ class SoftmaxCrossEntropy(Criterion):
         self.logits = x
         self.labels = y
 
-        raise NotImplemented
+        # Defining constant for log exp trick. 
+        # According to blog, max of logits works best as c
+        c = np.amax(self.logits,axis=1)
+        
+        # Calculating log exponent sum
+        temp = np.log(np.sum(np.exp(self.logits-c[:,None]),axis=1)) + c
+        
+        # Calculating log of softmax
+        log_softmax = self.logits - temp[:,None]
+        
+        # Calculating softmax to calculate derivative in future
+        self.softmax = np.exp(log_softmax)
+        
+        # Calculating cross entropy 
+        self.CE = -1*np.sum(np.multiply(self.labels,log_softmax), axis=1)
+        
+        return self.CE
 
     def derivative(self):
         """
@@ -56,4 +72,6 @@ class SoftmaxCrossEntropy(Criterion):
             out (np.array): (batch size, 10)
         """
 
-        raise NotImplemented
+        #raise NotImplemented
+        # reffered from spring 20CMU DL
+        return self.softmax - self.labels
